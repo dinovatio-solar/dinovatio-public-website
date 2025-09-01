@@ -1,0 +1,53 @@
+import FAQItem from "./FAQItem";
+
+type QA = { q: string; a: string };
+type Props = { items?: QA[]; title?: string; description?: string; moreHref?: string };
+
+const DEFAULTS: QA[] = [
+  {
+    q: "¿Cuánto cuesta instalar paneles fotovoltaicos?",
+    a: "Depende del tamaño del sistema y tu perfil de consumo. En residencial, un sistema típico puede recuperar la inversión en 2–6 años.",
+  },
+  {
+    q: "¿Qué beneficios tiene la asesoría en energías renovables?",
+    a: "Definimos el dimensionamiento óptimo, costos, ROI estimado, y coordinamos permisos e instalación certificada. También incluimos soporte y monitoreo.",
+  },
+  {
+    q: "¿Cómo calcular el ahorro con sistemas solares?",
+    a: "Usa nuestra calculadora para obtener una estimación. Te mostraremos el mínimo y máximo de kWh que podrías ahorrar. Ponte en contacto con nosotros para recibir una propuesta a tu medida.",
+  },
+];
+
+export default function FAQSection({
+  items = DEFAULTS,
+  title = "Preguntas frecuentes",
+  description = "Respuestas rápidas sobre costos, instalación y ahorro.",
+  moreHref = "/faqs",
+}: Props) {
+  return (
+    <section className="py-16 px-4 max-w-4xl mx-auto" aria-labelledby="faq-title">
+      <header className="text-center max-w-2xl mx-auto">
+        <h2 id="faq-title" className="text-2xl sm:text-3xl font-extrabold">
+          {title}
+        </h2>
+        <p className="text-neutral-600 dark:text-neutral-400 mt-2">{description}</p>
+      </header>
+
+      <div className="mt-8 grid gap-4">
+        {items.map((it, idx) => (
+          <FAQItem key={idx} question={it.q} answer={it.a} />
+        ))}
+      </div>
+      {/*}
+      <div className="mt-8 text-center">
+        <a
+          href={moreHref}
+          className="inline-block px-5 py-2 rounded-xl bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+        >
+          Ver todas las FAQs
+        </a>
+      </div>
+      */}
+    </section>
+  );
+}

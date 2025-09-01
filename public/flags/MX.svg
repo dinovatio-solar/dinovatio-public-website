@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7 4">
+  <!-- verde, blanco, rojo -->
+  <rect width="7" height="4" fill="#CE1126"/>
+  <rect width="4.6666667" height="4" fill="#FFFFFF"/>
+  <rect width="2.3333333" height="4" fill="#006847"/>
+  <!-- Emblema simplificado (no oficial) -->
+  <circle cx="3.5" cy="2" r="0.35" fill="#8C5B3E"/>
+</svg>

@@ -1,0 +1,11 @@
+services:
+  frontend:
+    build: .
+    container_name: dinovatio-frontend
+    ports:
+      - "5006:3000" # expone 3000 dentro del contenedor a 5006 afuera
+    environment:
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:5006}
+      # agrega aquí tus ENV para handlers (ej. email/CRM)
+      # - RESEND_API_KEY=...
+    restart: unless-stopped
