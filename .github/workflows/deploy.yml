@@ -48,16 +48,41 @@ jobs:
             sudo chown -R "${USER}:${USER}" "${REMOTE_DIR}"
             cd "${REMOTE_DIR}"
 
-            echo "==> Comprobando Docker/Compose"
+            echo "==> Instalando Docker si falta"
             if ! command -v docker >/dev/null 2>&1; then
-              echo "Docker no está instalado. Instalando..."
               curl -fsSL https://get.docker.com | sh
-              sudo usermod -aG docker "${USER}" || true
             fi
-            if ! docker compose version >/dev/null 2>&1; then
-              echo "Instalando Docker Compose plugin..."
+
+            echo "==> Iniciando y habilitando Docker"
+            if command -v systemctl >/dev/null 2>&1; then
+              sudo systemctl enable --now docker || true
+              sudo systemctl start docker || true
+            else
+              # sistemas sin systemd (init/sysv/openrc)
+              sudo service docker start || true
+              # fallback extremo: lanzar dockerd en background si nada anterior funciona
+              pgrep dockerd >/dev/null 2>&1 || (sudo nohup dockerd >/tmp/dockerd.log 2>&1 &)
+            fi
+
+            echo "==> Esperando a que el daemon responda"
+            for i in $(seq 1 30); do
+              if sudo docker info >/dev/null 2>&1; then
+                echo "Docker OK"
+                break
+              fi
+              sleep 2
+              if [ "$i" -eq 30 ]; then
+                echo "ERROR: Docker no levantó a tiempo"
+                exit 1
+              fi
+            done
+
+            echo "==> Instalando Docker Compose plugin si falta"
+            if ! sudo docker compose version >/dev/null 2>&1; then
               sudo mkdir -p /usr/local/lib/docker/cli-plugins
-              sudo curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+              sudo curl -SL \
+                https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 \
+                -o /usr/local/lib/docker/cli-plugins/docker-compose
               sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
             fi
 
@@ -69,13 +94,13 @@ jobs:
             EOF
 
             echo "==> Bajando contenedores antiguos (si existen)"
-            docker compose down --remove-orphans || true
+            sudo docker compose down --remove-orphans || true
 
             echo "==> Construyendo e iniciando en segundo plano"
-            docker compose up -d --build --remove-orphans
+            sudo docker compose up -d --build --remove-orphans
 
             echo "==> Estado de los contenedores"
-            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+            sudo docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
 
             echo "==> Logs iniciales (10s)"
-            timeout 10s docker logs -f dinovatio-frontend || true
+            sudo timeout 10s docker logs -f dinovatio-frontend || true
