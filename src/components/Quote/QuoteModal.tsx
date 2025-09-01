@@ -25,6 +25,10 @@ const empty: Form = {
   message: "",
 };
 
+const API_ORIGIN = 'https://api.dinovatio.com.ar';
+
+const API_QUOTE_URL = `${API_ORIGIN}/api/quote`;
+
 // —— Estilos reutilizables ——
 const fieldBase =
   "w-full rounded-xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-neutral-900/80 px-3 py-2 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral-900 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base";
@@ -243,16 +247,20 @@ export default function QuoteModal() {
         Object.entries(data).forEach(([k, val]) => formData.append(k, String(val ?? "")));
         photos.forEach((p, idx) => formData.append("photos", p.file, p.file.name || `photo-${idx + 1}.jpg`));
 
-        res = await fetch("/api/quote", {
+        res = await fetch(API_QUOTE_URL, {
           method: "POST",
           body: formData,
+          mode: "cors",
+          credentials: "omit",
         });
       } else {
         // JSON como antes
-        res = await fetch("/api/quote", {
+        res = await fetch(API_QUOTE_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
+          mode: "cors",
+          credentials: "omit",
         });
       }
 
