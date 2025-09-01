@@ -1,0 +1,100 @@
+name: Deploy Frontend (Next.js + Docker)
+
+on:
+  push:
+    branches: [ "main" ]    # ajusta si usas otra rama
+  workflow_dispatch:        # permite lanzarlo manualmente
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      REMOTE_DIR: /opt/dinovatio-frontend
+      # Puerto externo publicado por tu compose (5006) y puerto interno de Next (3000)
+      EXTERNAL_PORT: 5006
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # (Opcional) sanity check rápido del compose antes de subir
+      - name: Validate docker-compose
+        run: docker compose config
+
+      # Sube el código al servidor (excluimos carpetas pesadas o irrelevantes)
+      - name: Upload project to server via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          source: |
+            .
+            !.git/
+            !.github/
+            !node_modules/
+            !.next/
+          target: ${{ env.REMOTE_DIR }}
+
+      # Ejecuta comandos remotos para preparar y desplegar
+      - name: Deploy on server via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+
+            echo "==> Preparando directorio y permisos"
+            sudo mkdir -p "${REMOTE_DIR}"
+            sudo chown -R "${USER}:${USER}" "${REMOTE_DIR}"
+            cd "${REMOTE_DIR}"
+
+            echo "==> Comprobando Docker/Compose"
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "Docker no está instalado. Instalando..."
+              curl -fsSL https://get.docker.com | sh
+              sudo usermod -aG docker "${USER}" || true
+            fi
+            if ! docker compose version >/dev/null 2>&1; then
+              echo "Instalando Docker Compose plugin..."
+              sudo mkdir -p /usr/local/lib/docker/cli-plugins
+              sudo curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+            fi
+
+            echo "==> Creando/actualizando archivo .env de producción"
+            # Construimos una URL pública por defecto con la IP del host y puerto 5006
+            SITE_URL="http://${{ secrets.SSH_HOST }}:${EXTERNAL_PORT}"
+
+            # Generamos .env si no existe (o lo actualizamos idempotente)
+            # Puedes añadir aquí más variables que necesite tu app.
+            cat > .env <<EOF
+            NEXT_PUBLIC_SITE_URL=${SITE_URL}
+            RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+            EOF
+
+            echo "==> Bajando contenedores antiguos (si existen)"
+            # Intentamos con 'docker compose' y fallback a 'docker-compose'
+            if docker compose version >/dev/null 2>&1; then
+              docker compose down --remove-orphans || true
+            else
+              docker-compose down --remove-orphans || true
+            fi
+
+            echo "==> Construyendo e iniciando en segundo plano"
+            if docker compose version >/dev/null 2>&1; then
+              docker compose up -d --build --remove-orphans
+            else
+              docker-compose up -d --build --remove-orphans
+            fi
+
+            echo "==> Estado de los contenedores"
+            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+
+            echo "==> Logs iniciales (10s)"
+            timeout 10s docker logs -f dinovatio-frontend || true
