@@ -2,105 +2,107 @@ name: Deploy Frontend (Next.js + Docker)
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
-    env:
-      REMOTE_DIR: /opt/dinovatio-frontend
-      EXTERNAL_PORT: 5006
-
     steps:
-      - name: Checkout
+      - name: 'Checkout CODE'
         uses: actions/checkout@v4
 
-      - name: Validate docker-compose
-        run: docker compose config
-
-      # SUBIR TODO EL REPO (sin exclusiones) para evitar "tar: empty archive"
-      - name: Upload project to server via SCP
-        uses: appleboy/scp-action@v0.1.7
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: 22
-          source: "."                 # <- importante: sin exclusiones aquí
-          target: ${{ env.REMOTE_DIR }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Pasamos REMOTE_DIR y EXTERNAL_PORT al entorno remoto con 'envs'
-      - name: Deploy on server via SSH
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image for Production
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          envs: REMOTE_DIR,EXTERNAL_PORT
-          script_stop: true
-          script: |
-            set -euo pipefail
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/calculadora-ahorro-front:latest
 
-            echo "==> Preparando directorio y permisos"
-            sudo mkdir -p "${REMOTE_DIR}"
-            sudo chown -R "${USER}:${USER}" "${REMOTE_DIR}"
-            cd "${REMOTE_DIR}"
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
 
-            echo "==> Instalando Docker si falta"
-            if ! command -v docker >/dev/null 2>&1; then
-              curl -fsSL https://get.docker.com | sh
-            fi
+    steps:
+      - name: Install tools (jq, uuidgen)
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y jq uuid-runtime
 
-            echo "==> Iniciando y habilitando Docker"
-            if command -v systemctl >/dev/null 2>&1; then
-              sudo systemctl enable --now docker || true
-              sudo systemctl start docker || true
-            else
-              # sistemas sin systemd (init/sysv/openrc)
-              sudo service docker start || true
-              # fallback extremo: lanzar dockerd en background si nada anterior funciona
-              pgrep dockerd >/dev/null 2>&1 || (sudo nohup dockerd >/tmp/dockerd.log 2>&1 &)
-            fi
+      - name: Trigger deploy webhook for PROD server
+        env:
+          URL:       ${{ secrets.DEPLOY_WEBHOOK_PROD }}
+          CF_ID:     ${{ secrets.CF_ACCESS_CLIENT_ID_PROD }}
+          CF_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET_PROD }}
+          HMAC:      ${{ secrets.DEPLOY_HMAC_PROD }}
+        run: |
+          set -euo pipefail
 
-            echo "==> Esperando a que el daemon responda"
-            for i in $(seq 1 30); do
-              if sudo docker info >/dev/null 2>&1; then
-                echo "Docker OK"
-                break
-              fi
-              sleep 2
-              if [ "$i" -eq 30 ]; then
-                echo "ERROR: Docker no levantó a tiempo"
-                exit 1
-              fi
-            done
+          echo "::group::Sanity env"
+          echo "URL=${URL}"
+          echo "CF_ID len: ${#CF_ID}"
+          echo "CF_SECRET len: ${#CF_SECRET}"
+          echo "::endgroup::"
 
-            echo "==> Instalando Docker Compose plugin si falta"
-            if ! sudo docker compose version >/dev/null 2>&1; then
-              sudo mkdir -p /usr/local/lib/docker/cli-plugins
-              sudo curl -SL \
-                https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 \
-                -o /usr/local/lib/docker/cli-plugins/docker-compose
-              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-            fi
+          case "$URL" in
+            */hook) ;;
+            *) echo "ERROR: DEPLOY_WEBHOOK_PROD debe terminar en /hook (actual: $URL)"; exit 1;;
+          esac
+          BASE="${URL%/hook}"
 
-            echo "==> Creando/actualizando archivo .env de producción"
-            SITE_URL="http://${{ secrets.SSH_HOST }}:${EXTERNAL_PORT}"
-            cat > .env <<EOF
-            NEXT_PUBLIC_SITE_URL=${SITE_URL}
-            RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
-            EOF
+          retry() { n=0; until "$@" || [ $n -ge 8 ]; do n=$((n+1)); sleep $((2**n)); done; }
 
-            echo "==> Bajando contenedores antiguos (si existen)"
-            sudo docker compose down --remove-orphans || true
+          echo "::group::Preflight /healthz"
+          retry curl -i -sS -X GET "${BASE}/healthz" \
+            -H "CF-Access-Client-Id: ${CF_ID}" \
+            -H "CF-Access-Client-Secret: ${CF_SECRET}" || true
+          echo "::endgroup::"
 
-            echo "==> Construyendo e iniciando en segundo plano"
-            sudo docker compose up -d --build --remove-orphans
+          TS=$(date +%s)
+          NONCE=$(uuidgen | tr '[:upper:]' '[:lower:]')
+          IMAGE="ghcr.io/${{ github.repository_owner }}/calculadora-ahorro-front"
+          BODY=$(jq -cn --arg service "calculadora-ahorro" --arg tag "latest" --arg image "$IMAGE" --arg ts "$TS" --arg nonce "$NONCE" \
+            '{service:$service, tag:$tag, image:$image, ts:($ts|tonumber), nonce:$nonce}')
 
-            echo "==> Estado de los contenedores"
-            sudo docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+          SIG_HEX=$(printf "%s" "$BODY" | openssl dgst -sha256 -hmac "$HMAC" | awk '{print $2}')
+          SIG="sha256=${SIG_HEX}"
 
-            echo "==> Logs iniciales (10s)"
-            sudo timeout 10s docker logs -f dinovatio-frontend || true
+          echo "::group::Payload y firma"
+          echo "BODY: $BODY"
+          echo "SIG:  $SIG"
+          echo "::endgroup::"
+
+          echo "::group::POST /hook to PROD"
+          HTTP_CODE=$(curl -sS -D /tmp/headers.txt -o /tmp/resp.txt -w "%{http_code}" -X POST "$URL" \
+            -H "CF-Access-Client-Id: $CF_ID" \
+            -H "CF-Access-Client-Secret: $CF_SECRET" \
+            -H "X-Hub-Signature-256: $SIG" \
+            -H "Content-Type: application/json" \
+            --data "$BODY")
+          echo "HTTP_CODE=$HTTP_CODE"
+          echo "----- response headers -----"
+          sed 's/CF-Authorization:.*/CF-Authorization:[redacted]/g' /tmp/headers.txt || true
+          echo "----- body -----"
+          cat /tmp/resp.txt || true
+          echo "----------------------------"
+          echo "::endgroup::"
+
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo "Fallo el deploy a PROD. HTTP $HTTP_CODE"
+            exit 1
+          fi
