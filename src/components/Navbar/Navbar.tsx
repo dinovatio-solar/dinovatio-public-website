@@ -64,14 +64,14 @@ export default function Navbar() {
           aria-label="Ir al inicio"
         >
           <img
-            src="/assets/dinovatio-icon-emerald.svg"
+            src="/assets/dinamo-icon.png"
             alt=""
             className="h-14 w-14 md:h-16 md:w-16 shrink-0"
             aria-hidden="true"
           />
           <span className="flex">
-            <span className="font-bold text-zinc-900 dark:text-white">DINO</span>
-            <span className="font-bold text-zinc-900 dark:text-white">VATIO</span>
+            <span className="font-bold text-zinc-900 dark:text-white">DÍNAMO</span>
+            <span className="font-bold text-zinc-900 dark:text-white">&nbsp;ENERGÍA</span>
           </span>
         </a>
 

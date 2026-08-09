@@ -16,13 +16,13 @@ export default function Footer() {
             aria-label="Ir al inicio"
           >
             <img
-              src="/assets/dinovatio-icon-emerald.svg"
-              alt="Dinovatio"
+              src="/assets/dinamo-icon.png"
+              alt="Dínamo Energía"
               className="h-12 w-12 md:h-14 md:w-14 shrink-0"
             />
             <span className="flex">
-              <span className="font-bold text-zinc-900 dark:text-white">DINO</span>
-              <span className="font-bold text-zinc-900 dark:text-white">VATIO</span>
+              <span className="font-bold text-zinc-900 dark:text-white">DÍNAMO</span>
+              <span className="font-bold text-zinc-900 dark:text-white">&nbsp;ENERGÍA</span>
             </span>
           </a>
 
@@ -93,7 +93,7 @@ export default function Footer() {
       </div>
 
       <div className="text-center py-4 text-xs text-neutral-500 border-t border-black/5 dark:border-white/10">
-        © {new Date().getFullYear()} DINOVATIO · Todos los derechos reservados.
+        © {new Date().getFullYear()} DÍNAMO ENERGÍA · Todos los derechos reservados.
       </div>
     </footer>
   );

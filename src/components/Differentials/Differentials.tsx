@@ -29,7 +29,7 @@ const DEFAULTS: Item[] = [
 export default function Differentials({
   items = DEFAULTS,
   title = "Nuestros diferenciales",
-  description = "Lo que hace única a la experiencia Dinovatio para hogares e industrias.",
+  description = "Lo que hace única a la experiencia Dínamo Energía para hogares e industrias.",
 }: Props) {
   return (
     <section className="py-16 px-4 bg-neutral-50 dark:bg-neutral-900/40">
