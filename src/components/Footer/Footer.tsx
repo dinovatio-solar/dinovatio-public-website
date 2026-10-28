@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRegion } from "@/components/Region/RegionProvider";
+import { EVENTS, trackEvent } from "@/lib/analytics";
 
 export default function Footer() {
   const { region, regions, setRegion, current } = useRegion();
@@ -68,6 +69,9 @@ export default function Footer() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              trackEvent(EVENTS.newsletterSubmit);
+              // OJO: el formulario no persiste nada. El evento mide la
+              // intencion, pero la direccion se pierde hasta que haya backend.
               alert("¡Gracias por suscribirte!");
             }}
           >

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import { useQuoteModal } from "./QuoteModalProvider";
 import { useRegion } from "@/components/Region/RegionProvider";
+import { EVENTS, trackEvent } from "@/lib/analytics";
 
 // —— Tipos ——
 type Form = {
@@ -266,6 +267,13 @@ export default function QuoteModal() {
 
       if (!res.ok) throw new Error("No se pudo enviar la cotización");
       setOkMsg("¡Enviado! Te contactaremos a la brevedad.");
+      // Esta es la conversion real del sitio. Sin datos personales: solo el
+      // tipo de instalacion y la provincia, que sirven para segmentar.
+      trackEvent(EVENTS.quoteSubmit, {
+        tipo_instalacion: data.type,
+        provincia: data.region,
+        con_fotos: photos.length > 0,
+      });
       // limpiar
       photos.forEach((p) => URL.revokeObjectURL(p.url));
       setPhotos([]);
