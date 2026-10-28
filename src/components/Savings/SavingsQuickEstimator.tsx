@@ -4,6 +4,7 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuoteModal } from "@/components/Quote/QuoteModalProvider";
+import { EVENTS, trackEvent } from "@/lib/analytics";
 
 type Tipo = "residencial" | "industrialCampo";
 
@@ -142,7 +143,16 @@ export default function SavingsQuickEstimator() {
                   <button
                     key={e.kW}
                     type="button"
-                    onClick={() => setSelKW((v) => (v === e.kW ? null : e.kW))}
+                    onClick={() => {
+                      setSelKW((v) => {
+                        const next = v === e.kW ? null : e.kW;
+                        // Solo al elegir una potencia, no al deseleccionar.
+                        if (next !== null) {
+                          trackEvent(EVENTS.calculatorUse, { tipo, potencia_kw: next });
+                        }
+                        return next;
+                      });
+                    }}
                     aria-pressed={active}
                     className={[
                       "px-3 py-1.5 rounded-full text-sm border transition",

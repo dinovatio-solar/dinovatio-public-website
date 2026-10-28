@@ -3,6 +3,7 @@ import "./globals.css";
 import Providers from "@/components/Theme/Providers";
 import QuoteModalProvider from "@/components/Quote/QuoteModalProvider";
 import RegionProvider from "@/components/Region/RegionProvider";
+import GoogleAnalytics from "@/components/Analytics/GoogleAnalytics";
 import {
   ADDRESS,
   AREA_SERVED,
@@ -62,6 +63,11 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  // Token de verificacion de Google Search Console. Se inyecta como
+  // <meta name="google-site-verification">. Sin la variable, no se emite nada.
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
   manifest: "/site.webmanifest",
   icons: {
     icon: [
@@ -155,6 +161,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </QuoteModalProvider>
           </RegionProvider>
         </Providers>
+        <GoogleAnalytics />
       </body>
     </html>
   );
