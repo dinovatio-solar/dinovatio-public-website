@@ -1,7 +1,7 @@
 import StoryCard, { type Story } from "./StoryCard";
-import residencial from "@public/assets/residencial.png"
-import pymecordoba from "@public/assets/pymecordoba.png"
-import mendoza from "@public/assets/mendoza.png"
+import residencial from "@public/assets/residencial.webp"
+import pymecordoba from "@public/assets/pymecordoba.webp"
+import mendoza from "@public/assets/mendoza.webp"
 
 type Props = { items?: Story[]; title?: string; description?: string };
 

@@ -43,8 +43,8 @@ export const AREA_SERVED = [
 ] as const;
 
 export const OG_IMAGE = {
-  url: "/assets/hero-1.jpg",
+  url: "/assets/og-default.jpg",
   width: 1200,
-  height: 675,
+  height: 630,
   alt: "Instalación de paneles solares fotovoltaicos en Mendoza",
 } as const;
