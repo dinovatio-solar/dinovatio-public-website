@@ -1,21 +1,19 @@
 import Navbar from "@/components/Navbar/Navbar";
 import Hero from "@/components/Hero/Hero";
 import Services from "@/components/Services/Services";
-import Calculator from "@/components/Calculator/Calculator";
-import SuccessStories from "@/components/SuccessStories/SuccessStories";
 import Differentials from "@/components/Differentials/Differentials";
-import BlogSection from "@/components/Blog/BlogSection";
 import FAQSection from "@/components/FAQ/FAQSection";
 import FinalCTA from "@/components/CTA/FinalCTA";
 import Footer from "@/components/Footer/Footer";
 import StickyCTA from "@/components/CTA/StickyCTA";
-import WhatsAppFAB from "@/components/CTA/WhatsAppFAB";
 import SolarInstallFlow from "@/components/SolarInstallFlow/SolarInstallFlow";
 import SavingsQuickEstimator from "@/components/Savings/SavingsQuickEstimator";
 import AboutBlurb from "@/components/About/AboutBlurb";
-import SavingsCarousel from "@/components/Savings/SavingsQuickEstimator2";
-import SavingsDiscreteSlider from "@/components/Savings/SavingsDiscreteSlider";
-import SavingsMiniWizard from "@/components/Savings/SavingsMiniWizard";
+
+// Nota: había 7 imports más que no se renderizaban (Calculator, SuccessStories,
+// BlogSection, WhatsAppFAB, SavingsQuickEstimator2, SavingsDiscreteSlider,
+// SavingsMiniWizard). Al ser componentes cliente entraban igual al bundle.
+// Los componentes siguen en el repo; solo se quitó el import muerto.
 
 export default function Page() {
   return (

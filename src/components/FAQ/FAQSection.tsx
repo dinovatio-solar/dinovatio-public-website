@@ -24,8 +24,27 @@ export default function FAQSection({
   description = "Respuestas rápidas sobre costos, instalación y ahorro.",
   moreHref = "/faqs",
 }: Props) {
+  // FAQPage se genera desde los mismos `items` que se renderizan, para que el
+  // schema nunca se desincronice del contenido visible (Google lo exige).
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((it) => ({
+      "@type": "Question",
+      name: it.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: it.a,
+      },
+    })),
+  };
+
   return (
     <section className="py-16 px-4 max-w-4xl mx-auto" aria-labelledby="faq-title">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <header className="text-center max-w-2xl mx-auto">
         <h2 id="faq-title" className="text-2xl sm:text-3xl font-extrabold">
           {title}

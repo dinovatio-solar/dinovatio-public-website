@@ -47,7 +47,7 @@ export default function Footer() {
           <h5 className="font-semibold mb-3">Contacto</h5>
           <ul className="space-y-2 text-sm">
             <li>
-              Email: <a href="mailto:contacto@dinovatio.com.ar">contacto@dinovatio.com.ar</a>
+              Email: <a href="mailto:contacto@dinamoenergia.com.ar">contacto@dinamoenergia.com.ar</a>
             </li>
             <li>
               WhatsApp:{" "}

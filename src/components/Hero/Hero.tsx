@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import hero1 from "@public/assets/hero-1.jpg";
-import hero2 from "@public/assets/hero-2.jpg";
-import hero3 from "@public/assets/hero-3.jpg";
+import hero1 from "@public/assets/hero-1.webp";
+import hero2 from "@public/assets/hero-2.webp";
+import hero3 from "@public/assets/hero-3.webp";
 
 import { useQuoteModal } from "@/components/Quote/QuoteModalProvider";
 import { useRegion } from "@/components/Region/RegionProvider";
