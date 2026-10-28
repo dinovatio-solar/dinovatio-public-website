@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import Link from "next/link";
 import { Menu, X, PhoneCall, MessageCircle } from "lucide-react";
 import ThemeToggle from "@/components/Theme/ThemeToggle";
 import { useQuoteModal } from "@/components/Quote/QuoteModalProvider";
@@ -8,12 +9,12 @@ import { useRegion } from "@/components/Region/RegionProvider";
 import RegionSwitcher from "@/components/Region/RegionSwitcher";
 
 const navItems = [
-  { href: "#servicios", label: "Servicios" },
-  { href: "#calculadora", label: "Calculadora" },
-  //{ href: "#casos", label: "Casos de éxito" },
-  { href: "#somos", label: "¿Quienes Somos?" },
-  { href: "#faq", label: "FAQs" },
-  { href: "#contacto", label: "Contacto" },
+  { href: "/servicios", label: "Servicios" },
+  { href: "/calculadora-ahorro-solar-mendoza", label: "Calculadora" },
+  { href: "/zonas", label: "Zonas" },
+  { href: "/blog", label: "Blog" },
+  { href: "/#somos", label: "¿Quienes Somos?" },
+  { href: "/#contacto", label: "Contacto" },
 ];
 
 const normalizePhone = (num: string) => num.replace(/\D/g, "");
@@ -58,8 +59,8 @@ export default function Navbar() {
       {/* ⬇️ agrega el ref aquí */}
       <div ref={barRef} className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <a
-          href="#"
+        <Link
+          href="/"
           className="flex items-center gap-2 font-extrabold tracking-tight text-xl"
           aria-label="Ir al inicio"
         >
@@ -73,18 +74,18 @@ export default function Navbar() {
             <span className="font-bold text-zinc-900 dark:text-white">DÍNAMO</span>
             <span className="font-bold text-zinc-900 dark:text-white">&nbsp;ENERGÍA</span>
           </span>
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6" aria-label="Navegación principal">
           {navItems.map((i) => (
-            <a
+            <Link
               key={i.href}
               href={i.href}
               className="text-sm hover:text-brand-blue dark:hover:text-brand-yellow"
             >
               {i.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -135,14 +136,14 @@ export default function Navbar() {
         >
           <nav className="space-y-1" aria-label="Navegación móvil">
             {navItems.map((i) => (
-              <a
+              <Link
                 key={i.href}
                 href={i.href}
                 onClick={() => setOpenMenu(false)}
                 className="block py-2 text-sm hover:text-brand-blue dark:hover:text-brand-yellow"
               >
                 {i.label}
-              </a>
+              </Link>
             ))}
             {/*  
               <RegionSwitcher className="pt-2" />

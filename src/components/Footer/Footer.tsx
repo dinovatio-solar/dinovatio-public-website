@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useRegion } from "@/components/Region/RegionProvider";
 
 export default function Footer() {
@@ -34,11 +35,14 @@ export default function Footer() {
         {/* Col 2 */}
         <div>
           <h5 className="font-semibold mb-3">Links</h5>
+          {/* Rutas absolutas: los anchors relativos solo funcionaban en la home. */}
           <ul className="space-y-2 text-sm">
-            <li><a href="#servicios">Servicios</a></li>
-            <li><a href="#calculadora">Calculadora</a></li>
-            <li><a href="#faq">FAQs</a></li>
-            <li><a href="#cotizar">Cotización</a></li>
+            <li><Link href="/paneles-solares-mendoza">Paneles solares en Mendoza</Link></li>
+            <li><Link href="/servicios">Servicios</Link></li>
+            <li><Link href="/zonas">Zonas</Link></li>
+            <li><Link href="/calculadora-ahorro-solar-mendoza">Calculadora de ahorro</Link></li>
+            <li><Link href="/blog">Blog</Link></li>
+            <li><Link href="/#cotizar">Cotización</Link></li>
           </ul>
         </div>
 
@@ -93,7 +97,10 @@ export default function Footer() {
       </div>
 
       <div className="text-center py-4 text-xs text-neutral-500 border-t border-black/5 dark:border-white/10">
-        © {new Date().getFullYear()} DÍNAMO ENERGÍA · Todos los derechos reservados.
+        © {new Date().getFullYear()} DÍNAMO ENERGÍA · Todos los derechos reservados ·{" "}
+        <Link href="/politica-de-privacidad" className="underline underline-offset-2 hover:no-underline">
+          Política de privacidad
+        </Link>
       </div>
     </footer>
   );
