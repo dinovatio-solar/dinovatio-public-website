@@ -276,7 +276,7 @@ export default function QuoteModal() {
       const body = encodeURIComponent(
         `Nombre: ${data.name}\nEmail: ${data.email}\nWhatsApp: ${data.phone}\nProvincia: ${data.region}\nTipo: ${data.type}\nConsumo (kWh/mes): ${data.consumption}\n\n${data.message}\n\n(Puedes adjuntar las fotos respondiendo este correo.)`
       );
-      window.location.href = `mailto:contacto@dinovatio.com.ar?subject=Cotización Dínamo Energía&body=${body}`;
+      window.location.href = `mailto:contacto@dinamoenergia.com.ar?subject=Cotización Dínamo Energía&body=${body}`;
       setOkMsg("Abriendo tu cliente de correo…");
     } finally {
       setLoading(false);
