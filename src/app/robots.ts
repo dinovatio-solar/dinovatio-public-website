@@ -4,22 +4,34 @@ import { SITE_URL } from "@/lib/site";
 /**
  * robots.txt propio del sitio.
  *
- * ⚠️ IMPORTANTE: Cloudflare puede inyectar su propio bloque "Managed Content"
- * en /robots.txt y sobrescribir esto. Hoy ese bloque bloquea GPTBot,
- * ClaudeBot, Claude-Web, anthropic-ai, Google-Extended, CCBot,
- * meta-externalagent y PerplexityBot, lo que deja el sitio invisible para los
- * buscadores con IA.
+ * Lo que se sirve en producción es ESTE archivo más un bloque que Cloudflare
+ * antepone ("Bot Preference Sync", en Security → Settings → Configure AI bot
+ * policies). No es un conflicto: ese bloque publica en robots.txt la política
+ * de bots configurada en Cloudflare, que hoy es:
  *
- * Para que este archivo tenga efecto hay que desactivar en el dashboard de
- * Cloudflare: AI Crawl Control → "Block AI bots" / "Managed robots.txt".
- * Verificar después con: curl -s https://dinamoenergia.com.ar/robots.txt
+ *   Search   (indexan para resultados de búsqueda)     → Allow
+ *   Agent    (traen la página para responder al usuario) → Allow
+ *   Training (recolectan para entrenar modelos)        → Disallow
+ *
+ * Es decir: se permite a quien puede citar el sitio (Googlebot, OAI-SearchBot,
+ * ChatGPT-User, PerplexityBot, Claude-SearchBot, Applebot) y se bloquea a
+ * quien solo recolecta para entrenar (GPTBot, ClaudeBot, CCBot,
+ * Google-Extended, Meta-ExternalAgent). Los nombres de user-agent que
+ * aparecen con Disallow en /robots.txt son de esa segunda lista.
+ *
+ * Decisión tomada en octubre de 2026: se mantiene así. Claude-User queda
+ * bloqueado como efecto colateral, porque Cloudflare lo clasifica en Training
+ * aunque funcionalmente sea el equivalente de ChatGPT-User, y el plan no
+ * admite excepciones por bot: liberarlo exigiría pasar toda la categoría
+ * Training a Allow. La citación vía Claude-SearchBot no está afectada.
+ *
+ * Para verificar qué se sirve realmente:
+ *   curl -s https://dinamoenergia.com.ar/robots.txt
  */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        // Buscadores tradicionales y crawlers de IA con atribución
-        // (OAI-SearchBot, ChatGPT-User, PerplexityBot, Claude-User, etc.).
         userAgent: "*",
         allow: "/",
       },
