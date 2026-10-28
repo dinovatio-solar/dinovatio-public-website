@@ -102,7 +102,7 @@ export default function SolarInstallFlow({
             Tu camino a la energía solar
           </motion.h2>
           <p className="mt-3 text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-            Sigue estos pasos; en cada uno te acompañamos para que el siguiente sea aún más fácil.
+            Seguí estos pasos; en cada uno te acompañamos para que el siguiente sea más fácil.
           </p>
         </div>
 

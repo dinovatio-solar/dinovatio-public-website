@@ -183,7 +183,7 @@ export default function QuoteModal() {
         break;
       }
       if (!ACCEPTED_MIME.has(f.type)) {
-        error = "Formato no soportado. Usa JPG, PNG, WEBP, GIF o HEIC/HEIF.";
+        error = "Formato no soportado. Usá JPG, PNG, WEBP, GIF o HEIC/HEIF.";
         continue;
       }
       if (f.size > MAX_SIZE) {
