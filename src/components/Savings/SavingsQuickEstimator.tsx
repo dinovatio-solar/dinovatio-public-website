@@ -112,7 +112,7 @@ export default function SavingsQuickEstimator() {
         >
           <div className="p-6 sm:p-8 text-center">
             <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-              ¿Cuánto puedes ahorrar con paneles solares?
+              ¿Cuánto podés ahorrar con paneles solares?
             </h2>
 
             {/* Rango o valor seleccionado */}

@@ -6,7 +6,7 @@ type Props = { items?: QA[]; title?: string; description?: string; moreHref?: st
 const DEFAULTS: QA[] = [
   {
     q: "¿Cuánto cuesta instalar paneles fotovoltaicos?",
-    a: "Depende del tamaño del sistema y tu perfil de consumo. En residencial, un sistema típico puede recuperar la inversión en 2–6 años.",
+    a: "Depende del tamaño del sistema y de tu perfil de consumo. En residencial, un sistema típico puede recuperar la inversión en 2–6 años. Lo que define el tamaño es tu consumo anual en kWh, no los metros de techo.",
   },
   {
     q: "¿Qué beneficios tiene la asesoría en energías renovables?",
@@ -14,7 +14,7 @@ const DEFAULTS: QA[] = [
   },
   {
     q: "¿Cómo calcular el ahorro con sistemas solares?",
-    a: "Usa nuestra calculadora para obtener una estimación. Te mostraremos el mínimo y máximo de kWh que podrías ahorrar. Ponte en contacto con nosotros para recibir una propuesta a tu medida.",
+    a: "Usá la calculadora para una estimación rápida: te muestra el mínimo y el máximo que podrías ahorrar. Para una propuesta a medida necesitamos tus últimas doce facturas, que es de donde sale el consumo anual real.",
   },
 ];
 

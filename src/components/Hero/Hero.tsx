@@ -74,10 +74,11 @@ export default function Hero() {
       {/* Contenido */}
       <div className="relative z-10 text-white max-w-2xl">
         <h1 className="text-3xl md:text-5xl font-bold">
-          Ahorra energía y dinero con paneles fotovoltaicos
+          Paneles solares en Mendoza: bajá tu factura de luz
         </h1>
         <p className="mt-4 text-lg md:text-xl">
-          Instalación residencial, industrial, campo y asesoría experta.
+          Instalación residencial, industrial y de campo, con el trámite de usuario
+          generador ante el EPRE incluido.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
           {/* Cotizar */}
@@ -85,7 +86,7 @@ export default function Hero() {
             onClick={openQuote}
             className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-semibold"
           >
-            Cotiza tu sistema ahora
+            Cotizá tu sistema
           </button>
 
           {/* WhatsApp */}
@@ -95,7 +96,7 @@ export default function Hero() {
             rel="noopener noreferrer"
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-center"
           >
-            Contacta por WhatsApp
+            Escribinos por WhatsApp
           </a>
         </div>
       </div>
