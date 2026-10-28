@@ -21,10 +21,10 @@ export const metadata: Metadata = pageMetadata({
  *
  *  1. Razón social y domicilio legal de la empresa. Están como marcadores.
  *  2. Plazo de conservación de los datos, que hoy se enuncia de forma genérica.
- *  3. Analítica y píxeles. El sitio todavía no tiene GA4, GTM ni Meta Pixel.
- *     Cuando se instalen, hay que detallarlos acá y agregar banner de
- *     consentimiento: Google Ads exige política de privacidad para campañas
- *     con formularios de captación de leads.
+ *  3. GA4 ya está instalado y documentado más abajo. Falta decidir si se
+ *     agrega banner de consentimiento de cookies; no es obligatorio bajo la
+ *     Ley 25.326, pero sí conviene si alguna vez se segmenta tráfico europeo.
+ *     Si se suma Meta Pixel o remarketing, hay que detallarlo acá.
  *  4. El formulario de cotización permite adjuntar fotos. Conviene aclarar
  *     dónde se almacenan y por cuánto tiempo.
  */
@@ -73,7 +73,7 @@ const BLOQUES: Block[] = [
   },
   {
     t: "p",
-    text: "La calculadora de ahorro **no requiere ni almacena datos personales**: funciona en tu navegador y no envía nada a nuestros servidores.",
+    text: "La calculadora de ahorro **no requiere ni almacena datos personales**: el cálculo ocurre en tu navegador. Sí se registra de forma anónima qué potencia se consultó, con la herramienta de analítica que describimos más abajo.",
   },
 
   { t: "h2", text: "Para qué usamos los datos" },
@@ -117,9 +117,22 @@ const BLOQUES: Block[] = [
     t: "p",
     text: "El sitio usa almacenamiento local del navegador para recordar dos preferencias tuyas: el tema claro u oscuro y la provincia seleccionada. No son datos personales y no se envían a ningún servidor. Podés borrarlos desde la configuración de tu navegador.",
   },
+  { t: "h3", text: "Google Analytics" },
   {
     t: "p",
-    text: "Al día de hoy el sitio **no utiliza herramientas de analítica ni píxeles publicitarios de terceros**. Si eso cambia, se actualizará esta política y se solicitará tu consentimiento cuando corresponda.",
+    text: "El sitio usa **Google Analytics 4**, de Google Ireland Limited, para entender cómo se navega: qué páginas se visitan, desde qué canal llega la gente y qué botones se usan. Google actúa como encargado del tratamiento por nuestra cuenta.",
+  },
+  {
+    t: "p",
+    text: "Lo que se mide es **estadístico y no te identifica**: páginas vistas, clics en los botones de WhatsApp y de cotización, uso de la calculadora, tipo de dispositivo y ubicación aproximada a nivel de ciudad. No se envían a Google tu nombre, tu correo ni tu teléfono, aunque los hayas escrito en el formulario.",
+  },
+  {
+    t: "p",
+    text: "Para hacerlo, Google instala cookies en tu navegador. Podés bloquearlas desde la configuración del navegador, o instalar el [complemento de inhabilitación de Google Analytics](https://tools.google.com/dlpage/gaoptout), que desactiva la medición en todos los sitios que lo usen.",
+  },
+  {
+    t: "p",
+    text: "El sitio **no utiliza píxeles publicitarios ni herramientas de remarketing**. Si eso cambia, se actualizará esta política y se pedirá tu consentimiento cuando corresponda.",
   },
 
   { t: "h2", text: "Cambios en esta política" },
